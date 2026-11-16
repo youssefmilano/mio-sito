@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La mia galleria - Youssef</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+<a href="index.html">Chi sono</a>
+<a href="competenze.html">Competenze</a>
+<a href="hobby.html">Hobby</a>
+<a href="interessi.html">Interessi</a>
+<a href="galleria.html" class="attivo">Galleria</a>
+</nav>
+
+<div id="sfondo">
+<div class="strato"></div>
+<div class="strato"></div>
+</div>
+<div id="velo"></div>
+
+<header>
+<div class="etichetta">FOTO</div>
+<h1>La mia galleria</h1>
+<p>Le mie 3 immagini preferite.</p>
+<div class="linea"></div>
+</header>
+
+<main>
+<section>
+<h2>La mia galleria</h2>
+<div class="galleria">
+
+<!-- Slot 1 -->
+<div class="slot" data-numero="1">
+<div class="cornice"></div>
+<div class="bottoni">
+<button type="button" class="bottone btn-aggiungi">Aggiungi foto</button>
+<button type="button" class="bottone secondario btn-togli">Togli</button>
+</div>
+<input type="file" accept="image/*" class="nascosto">
+</div>
+
+<!-- Slot 2 -->
+<div class="slot" data-numero="2">
+<div class="cornice"></div>
+<div class="bottoni">
+<button type="button" class="bottone btn-aggiungi">Aggiungi foto</button>
+<button type="button" class="bottone secondario btn-togli">Togli</button>
+</div>
+<input type="file" accept="image/*" class="nascosto">
+</div>
+
+<!-- Slot 3 -->
+<div class="slot" data-numero="3">
+<div class="cornice"></div>
+<div class="bottoni">
+<button type="button" class="bottone btn-aggiungi">Aggiungi foto</button>
+<button type="button" class="bottone secondario btn-togli">Togli</button>
+</div>
+<input type="file" accept="image/*" class="nascosto">
+</div>
+
+</div>
+<p class="nota">Le foto che aggiungo restano salvate in questo browser. Se non aggiungo nulla, vengono mostrate foto1.jpg, foto2.jpg e foto3.jpg.</p>
+</section>
+</main>
+
+<footer>
+<p>La mia prima home page - 2INF</p>
+</footer>
+
+<script>
+var NUMERO_SLOT = 3;
+var SECONDI = 6;
+var fotoSlot = [null, null, null];
+var strati = document.querySelectorAll(".strato");
+var elenco = [];
+var indice = 0;
+var attuale = 0;
+
+function disegnaSlot(i) {
+  var slot = document.querySelectorAll(".slot")[i];
+  var cornice = slot.querySelector(".cornice");
+  cornice.innerHTML = "";
+  if (fotoSlot[i]) {
+    var img = document.createElement("img");
+    img.src = fotoSlot[i];
+    img.alt = "Foto " + (i + 1);
+    cornice.appendChild(img);
+  } else {
+    var testo = document.createElement("div");
+    testo.className = "vuoto";
+    testo.textContent = "Slot " + (i + 1) + " vuoto";
+    cornice.appendChild(testo);
+  }
+}
+
+function caricaSlot(i) {
+  var salvata = null;
+  try { salvata = localStorage.getItem("fotoSlot" + (i + 1)); } catch (e) {}
+
+  if (salvata) {
+    fotoSlot[i] = salvata;
+    disegnaSlot(i);
+    aggiornaSfondo();
+    return;
+  }
+
+  var nomeFile = "foto" + (i + 1) + ".jpg";
+  var prova = new Image();
+  prova.onload = function () {
+    fotoSlot[i] = nomeFile;
+    disegnaSlot(i);
+    aggiornaSfondo();
+  };
+  prova.onerror = function () {
+    fotoSlot[i] = null;
+    disegnaSlot(i);
+    aggiornaSfondo();
+  };
+  prova.src = nomeFile;
+}
+
+function aggiungiFoto(i, file) {
+  if (!file || file.type.indexOf("image/") !== 0) { return; }
+
+  var lettore = new FileReader();
+  lettore.onload = function () {
+    var img = new Image();
+    img.onload = function () {
+      var misure = [
+        { larghezza: 1920, qualita: 0.92 },
+        { larghezza: 1600, qualita: 0.85 },
+        { larghezza: 1280, qualita: 0.8 }
+      ];
+      var salvata = null;
+
+      for (var t = 0; t < misure.length && !salvata; t++) {
+        var scala = Math.min(1, misure[t].larghezza / img.width);
+        var canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.width * scala);
+        canvas.height = Math.round(img.height * scala);
+        var disegno = canvas.getContext("2d");
+        disegno.imageSmoothingQuality = "high";
+        disegno.drawImage(img, 0, 0, canvas.width, canvas.height);
+        var dati = canvas.toDataURL("image/jpeg", misure[t].qualita);
+        try {
+          localStorage.setItem("fotoSlot" + (i + 1), dati);
+          salvata = dati;
+        } catch (e) {}
+      }
+
+      if (!salvata) {
+        alert("Non riesco a salvare la foto: la memoria del browser è piena.");
+        return;
+      }
+      fotoSlot[i] = salvata;
+      disegnaSlot(i);
+      aggiornaSfondo();
+    };
+    img.src = lettore.result;
+  };
+  lettore.readAsDataURL(file);
+}
+
+function togliFoto(i) {
+  try { localStorage.removeItem("fotoSlot" + (i + 1)); } catch (e) {}
+  caricaSlot(i);
+}
+
+var tuttiGliSlot = document.querySelectorAll(".slot");
+for (var n = 0; n < NUMERO_SLOT; n++) {
+  (function (i) {
+    var slot = tuttiGliSlot[i];
+    var scelta = slot.querySelector("input[type=file]");
+    slot.querySelector(".btn-aggiungi").onclick = function () { scelta.click(); };
+    slot.querySelector(".btn-togli").onclick = function () { togliFoto(i); };
+    scelta.onchange = function () {
+      aggiungiFoto(i, scelta.files[0]);
+      scelta.value = "";
+    };
+    disegnaSlot(i);
+    caricaSlot(i);
+  })(n);
+}
+
+function aggiornaSfondo() {
+  elenco = [];
+  for (var i = 0; i < NUMERO_SLOT; i++) {
+    if (fotoSlot[i]) { elenco.push(fotoSlot[i]); }
+  }
+  if (elenco.length === 0) {
+    strati[0].classList.remove("attivo");
+    strati[1].classList.remove("attivo");
+    return;
+  }
+  indice = 0;
+  strati[attuale].style.backgroundImage = 'url("' + elenco[0] + '")';
+  strati[attuale].classList.add("attivo");
+  strati[1 - attuale].classList.remove("attivo");
+}
+
+setInterval(function () {
+  if (elenco.length < 2) { return; }
+  indice = (indice + 1) % elenco.length;
+  var prossimo = 1 - attuale;
+  strati[prossimo].style.backgroundImage = 'url("' + elenco[indice] + '")';
+  strati[prossimo].classList.add("attivo");
+  strati[attuale].classList.remove("attivo");
+  attuale = prossimo;
+}, SECONDI * 1000);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>I miei hobby - Youssef</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+<a href="index.html">Chi sono</a>
+<a href="competenze.html">Competenze</a>
+<a href="hobby.html" class="attivo">Hobby</a>
+<a href="interessi.html">Interessi</a>
+<a href="galleria.html">Galleria</a>
+</nav>
+
+<div id="sfondo">
+<div class="strato"></div>
+<div class="strato"></div>
+</div>
+<div id="velo"></div>
+
+<header>
+<div class="etichetta">TEMPO LIBERO</div>
+<h1>I miei hobby</h1>
+<p>Le attività che pratico fuori da scuola.</p>
+<div class="linea"></div>
+</header>
+
+<main>
+<section>
+<h2>I miei hobby</h2>
+<p>Nel tempo libero mi piace giocare ai videogiochi e praticare la Muay Thai.</p>
+<ul>
+<li>Giocare ai videogiochi</li>
+<li>Praticare la Muay Thai</li>
+</ul>
+
+<table>
+<tr>
+<th>Hobby</th>
+<th>Da quando</th>
+</tr>
+<tr>
+<td>Giocare ai videogiochi</td>
+<td><span class="badge">2018</span></td>
+</tr>
+<tr>
+<td>Praticare la Muay Thai</td>
+<td><span class="badge">2022</span></td>
+</tr>
+</table>
+</section>
+</main>
+
+<footer>
+<p>La mia prima home page - 2INF</p>
+</footer>
+
+<script>
+var SECONDI = 6;
+var strati = document.querySelectorAll(".strato");
+var elenco = [];
+var indice = 0;
+var attuale = 0;
+
+for (var i = 0; i < 3; i++) {
+  var salvata = null;
+  try { salvata = localStorage.getItem("fotoSlot" + (i + 1)); } catch (e) {}
+  elenco.push(salvata ? salvata : "foto" + (i + 1) + ".jpg");
+}
+strati[0].style.backgroundImage = 'url("' + elenco[0] + '")';
+strati[0].classList.add("attivo");
+
+setInterval(function () {
+  indice = (indice + 1) % elenco.length;
+  var prossimo = 1 - attuale;
+  strati[prossimo].style.backgroundImage = 'url("' + elenco[indice] + '")';
+  strati[prossimo].classList.add("attivo");
+  strati[attuale].classList.remove("attivo");
+  attuale = prossimo;
+}, SECONDI * 1000);
+</script>
+
+</body>
+</html>

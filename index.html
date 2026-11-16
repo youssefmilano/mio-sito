@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chi sono - Youssef</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+<a href="index.html" class="attivo">Chi sono</a>
+<a href="competenze.html">Competenze</a>
+<a href="hobby.html">Hobby</a>
+<a href="interessi.html">Interessi</a>
+<a href="galleria.html">Galleria</a>
+</nav>
+
+<div id="sfondo">
+<div class="strato"></div>
+<div class="strato"></div>
+</div>
+<div id="velo"></div>
+
+<header>
+<div class="etichetta">HOME PAGE</div>
+<h1>Ciao, sono Youssef</h1>
+<p>Studio informatica, mi piacciono i computer, i videogiochi e la Muay Thai.</p>
+<div class="linea"></div>
+</header>
+
+<main>
+<section>
+<h2>Chi sono</h2>
+<p>Benvenuto nel mio sito personale! Frequento la classe 2INF e sono appassionato di tecnologia, hardware e sport da combattimento. Usa il menu in alto per scoprire le mie competenze informatiche, i miei hobby, i miei interessi e la mia galleria fotografica.</p>
+<ul>
+<li>Studente 2INF</li>
+<li>Appassionato di PC</li>
+<li>Muay Thai &amp; Gaming</li>
+</ul>
+</section>
+</main>
+
+<div class="contatore">
+<div class="visualizzazioni" title="Visualizzazioni totali del sito">
+<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Visualizzazioni">
+<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+<circle cx="12" cy="12" r="3"></circle>
+</svg>
+<span id="visite">...</span>
+</div>
+</div>
+
+<footer>
+<p>La mia prima home page - 2INF</p>
+</footer>
+
+<script>
+var SECONDI = 6;
+var strati = document.querySelectorAll(".strato");
+var elenco = [];
+var indice = 0;
+var attuale = 0;
+
+function aggiornaSfondo() {
+  elenco = [];
+  for (var i = 0; i < 3; i++) {
+    var salvata = null;
+    try { salvata = localStorage.getItem("fotoSlot" + (i + 1)); } catch (e) {}
+    elenco.push(salvata ? salvata : "foto" + (i + 1) + ".jpg");
+  }
+  strati[attuale].style.backgroundImage = 'url("' + elenco[0] + '")';
+  strati[attuale].classList.add("attivo");
+}
+
+aggiornaSfondo();
+
+setInterval(function () {
+  if (elenco.length < 2) { return; }
+  indice = (indice + 1) % elenco.length;
+  var prossimo = 1 - attuale;
+  strati[prossimo].style.backgroundImage = 'url("' + elenco[indice] + '")';
+  strati[prossimo].classList.add("attivo");
+  strati[attuale].classList.remove("attivo");
+  attuale = prossimo;
+}, SECONDI * 1000);
+
+var elTotale = document.getElementById("visite");
+var giaContata = false;
+try { giaContata = sessionStorage.getItem("visitaContata") === "si"; } catch (e) {}
+
+if (location.protocol === "file:") {
+  elTotale.textContent = "-";
+} else {
+  var azione = giaContata ? "get" : "hit";
+  var indirizzo = "https://abacus.jasoncameron.dev/" + azione + "/" + location.hostname + "/visite";
+  fetch(indirizzo)
+    .then(function (risposta) { return risposta.json(); })
+    .then(function (dati) {
+      elTotale.textContent = dati.value;
+      try { sessionStorage.setItem("visitaContata", "si"); } catch (e) {}
+    })
+    .catch(function () {
+      elTotale.textContent = "-";
+    });
+}
+</script>
+
+</body>
+</html>

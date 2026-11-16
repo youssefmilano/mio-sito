@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>I miei interessi - Youssef</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+<a href="index.html">Chi sono</a>
+<a href="competenze.html">Competenze</a>
+<a href="hobby.html">Hobby</a>
+<a href="interessi.html" class="attivo">Interessi</a>
+<a href="galleria.html">Galleria</a>
+</nav>
+
+<div id="sfondo">
+<div class="strato"></div>
+<div class="strato"></div>
+</div>
+<div id="velo"></div>
+
+<header>
+<div class="etichetta">CURIOSITÀ</div>
+<h1>I miei interessi</h1>
+<p>Le cose che mi incuriosiscono e che voglio approfondire.</p>
+<div class="linea"></div>
+</header>
+
+<main>
+<section>
+<h2>I miei interessi</h2>
+<p>Mi interessa capire come funzionano l'hardware e il software dei computer, scoprire nuove tecnologie e seguire il mondo dei motori.</p>
+<ul>
+<li>Hardware e assemblaggio PC</li>
+<li>Programmazione e creazione di software</li>
+<li>Sport da combattimento e preparazione atletica</li>
+<li>Auto sportive e motori</li>
+</ul>
+</section>
+</main>
+
+<footer>
+<p>La mia prima home page - 2INF</p>
+</footer>
+
+<script>
+var SECONDI = 6;
+var strati = document.querySelectorAll(".strato");
+var elenco = [];
+var indice = 0;
+var attuale = 0;
+
+for (var i = 0; i < 3; i++) {
+  var salvata = null;
+  try { salvata = localStorage.getItem("fotoSlot" + (i + 1)); } catch (e) {}
+  elenco.push(salvata ? salvata : "foto" + (i + 1) + ".jpg");
+}
+strati[0].style.backgroundImage = 'url("' + elenco[0] + '")';
+strati[0].classList.add("attivo");
+
+setInterval(function () {
+  indice = (indice + 1) % elenco.length;
+  var prossimo = 1 - attuale;
+  strati[prossimo].style.backgroundImage = 'url("' + elenco[indice] + '")';
+  strati[prossimo].classList.add("attivo");
+  strati[attuale].classList.remove("attivo");
+  attuale = prossimo;
+}, SECONDI * 1000);
+</script>
+
+</body>
+</html>
